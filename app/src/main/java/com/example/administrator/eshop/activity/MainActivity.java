@@ -1,25 +1,27 @@
 package com.example.administrator.eshop.activity;
 
 import android.support.annotation.IdRes;
-import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 
 import com.example.administrator.eshop.R;
-import com.example.administrator.eshop.activity.Fragment.TestFragment;
+import com.example.administrator.eshop.activity.fragment.CategoryFragment;
+import com.example.administrator.eshop.activity.fragment.TestFragment;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabSelectListener;
 
 public class MainActivity extends AppCompatActivity implements OnTabSelectListener {
     private FrameLayout layout_container;
     private BottomBar bottom_bar;
-    private TestFragment mHomeFragment, mCategoryFragment, mCartFragment, mSelfFragment;
-    private TestFragment currentFragment;
+    private Fragment mHomeFragment, mCategoryFragment, mCartFragment, mSelfFragment;
+    private Fragment currentFragment;
     private FragmentTransaction transaction;
+    private boolean isFinis;
+    private boolean isFinish;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +34,6 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
         layout_container = (FrameLayout) findViewById(R.id.layout_container);
         bottom_bar = (BottomBar) findViewById(R.id.bottom_bar);
         bottom_bar.setOnTabSelectListener(this);
-
     }
 
     @Override
@@ -47,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
                 break;
             case R.id.tab_category:
                 if (mCategoryFragment == null) {
-                    mCategoryFragment = TestFragment.getInstance("category");
+                    mCategoryFragment = new CategoryFragment();
 
                 }
                 switchFragment(mCategoryFragment);
@@ -68,7 +69,7 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
         }
     }
 
-    public void switchFragment(TestFragment target) {
+    public void switchFragment(Fragment target) {
         transaction = getSupportFragmentManager().beginTransaction();
         if (currentFragment == target) {
            return;
@@ -80,8 +81,7 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
             transaction.show(target);
 
         }else {
-            String tag = target.getArgumentText();
-            transaction.add(R.id.layout_container,target,tag);
+            transaction.add(R.id.layout_container,target);
         }
 
         transaction.commit();
@@ -91,10 +91,15 @@ public class MainActivity extends AppCompatActivity implements OnTabSelectListen
 
     @Override
     public void onBackPressed() {
-        if (currentFragment!=mHomeFragment){
-            //切换到首页上
-            bottom_bar.selectTabWithId(R.id.tab_home);
+        if (currentFragment!=mHomeFragment) {
+                //切换到首页上
+                bottom_bar.selectTabWithId(R.id.tab_home);
         }
-        finish();
+        if (!isFinish) {
+            isFinish=true;
+        }else {
+            finish();
+        }
+
     }
 }
