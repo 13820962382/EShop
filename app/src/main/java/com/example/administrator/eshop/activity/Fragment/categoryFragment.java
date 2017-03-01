@@ -44,11 +44,9 @@ public class CategoryFragment extends BaseFragment {
 
     @Override
     public void initView(View view) {
-        standard_toolbar = (Toolbar) view.findViewById(R.id.standard_toolbar);
         list_category = (ListView) view.findViewById(R.id.list_category);
         list_children = (ListView) view.findViewById(R.id.list_children);
-        standard_toolbar_title = (TextView) view.findViewById(R.id.standard_toolbar_title);
-        standard_toolbar_title.setText("分类");
+
         categoryList = new ArrayList<>();
         chiList = new ArrayList<>();
         caAdapter = new CategoryAdapter(getContext(), categoryList);
@@ -56,11 +54,13 @@ public class CategoryFragment extends BaseFragment {
         list_category.setAdapter(caAdapter);
         list_children.setAdapter(chiAdapter);
         list_category.setItemChecked(0,true);
-
-        initToolbar();
     }
 
-    public void initToolbar(){
+    @Override
+    public void initToolbar(View view) {
+        standard_toolbar = (Toolbar) view.findViewById(R.id.standard_toolbar);
+        standard_toolbar_title = (TextView) view.findViewById(R.id.standard_toolbar_title);
+        standard_toolbar_title.setText("分类");
         // Fragment显示选项菜单
         setHasOptionsMenu(true);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
@@ -81,6 +81,7 @@ public class CategoryFragment extends BaseFragment {
                 list_children.setAdapter(chiAdapter);
             }
         });
+        //// TODO: 2017/2/28 子分类跳转页面待实现 
         list_children.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
@@ -112,6 +113,7 @@ public class CategoryFragment extends BaseFragment {
         });
 
     }
+
 
     @Override
     public int getLayoutId() {
