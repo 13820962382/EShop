@@ -2,6 +2,9 @@ package com.example.administrator.eshop.activity.fragment;
 
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,11 +17,16 @@ import android.widget.Toast;
 
 import com.example.administrator.eshop.R;
 import com.example.administrator.eshop.activity.adapter.BannerAdapter;
+import com.example.administrator.eshop.activity.adapter.HeadAdapter;
+import com.example.administrator.eshop.activity.adapter.LRecyclerAdapter;
 import com.example.administrator.eshop.activity.api.MyCallBack;
 import com.example.administrator.eshop.activity.api.OkHttpUtil;
 import com.example.administrator.eshop.activity.base.BaseFragment;
 import com.example.administrator.eshop.activity.mode.Banner;
+import com.example.administrator.eshop.activity.mode.CategoryHome;
+import com.example.administrator.eshop.activity.mode.HomeBanner;
 import com.example.administrator.eshop.activity.mode.HomeBannerRsp;
+import com.example.administrator.eshop.activity.mode.SimpleGoods;
 import com.example.administrator.eshop.activity.view.BannerLayout;
 import com.example.administrator.eshop.activity.view.GlideImageLoader;
 import com.github.jdsjlzx.recyclerview.LRecyclerView;
@@ -30,6 +38,7 @@ import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.Call;
@@ -42,17 +51,22 @@ import okhttp3.Response;
 public class HomeFragment extends BaseFragment {
     private Toolbar standard_toolbar;
     private TextView standard_toolbar_title;
-    private LRecyclerView lRecyclerView;
     private com.youth.banner.Banner banner;
-    private ListView list_home_goods;
-    private ViewPager viewPager;
-    private LinearLayout linearPoint;
-    private BannerLayout bannerLayout;
     private static final String HOME_URL = "http://106.14.32.204/eshop/emobile/?url=/home/data";
-    private List images;
-    private ImageView[] points;
-    private BannerAdapter<Banner> bannerAdapter;
-    private LRecyclerViewAdapter mLRecyclerViewAdapter;
+    private List<SimpleGoods> homeList = new ArrayList();
+    private List<HomeBanner.DataBean.PromoteGoodsBean> headList = new ArrayList();
+    private List bannerList = new ArrayList();
+    private HeadAdapter headAdapter;
+    private LRecyclerAdapter lRecyclerAdapter;
+    private RecyclerView headRecycler;
+    private LRecyclerView lRecyclerView;
+    private LRecyclerViewAdapter adapter;
+    private View header;
+    //    private BannerAdapter<Banner> bannerAdapter;
+//    private ListView list_home_goods;
+//    private ViewPager viewPager;
+//    private LinearLayout linearPoint;
+//    private BannerLayout bannerLayout;
 
     @Override
     public int getLayoutId() {
@@ -61,6 +75,7 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     public void initView(View view) {
+//        Fresco.initialize(this);
 //        list_home_goods = (ListView) view.findViewById(R.id.list_home_goods);
 //        View headView = LayoutInflater.from(getContext()).inflate(R.layout.partial_home_header,list_home_goods,false);
 //        bannerLayout = (BannerLayout) headView.findViewById(R.id.layout_banner);
@@ -73,12 +88,23 @@ public class HomeFragment extends BaseFragment {
 //        };
 //        bannerLayout.setBannerAdapter(bannerAdapter);
 
+
         lRecyclerView = (LRecyclerView) view.findViewById(R.id.lrecyclerview_banner);
-        addHeadView(view);
+        lRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+        lRecyclerAdapter = new LRecyclerAdapter(getContext(), homeList, new int[]{R.layout.home_recyclerview_item});
+        adapter = new LRecyclerViewAdapter(lRecyclerAdapter);
+        //初始化头布局
+        header = LayoutInflater.from(getContext()).inflate(R.layout.home_recyclerview_head,(ViewGroup) view, false);
+        //添加头布局
+        initBanner(view);
+        adapter.addHeaderView(header);
+        lRecyclerView.setAdapter(adapter);
+
     }
 
-    private void addHeadView(View view) {
+    private void initBanner(View view) {
         banner = (com.youth.banner.Banner) view.findViewById(R.id.banner);
+
         //设置banner样式
         banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR);
         //设置图片加载器
@@ -89,14 +115,17 @@ public class HomeFragment extends BaseFragment {
         banner.setDelayTime(3000);
         //设置指示器位置（当banner模式中有指示器时）
         banner.setIndicatorGravity(BannerConfig.CENTER);
-        CommonHeader headerView = new CommonHeader(getActivity(), R.layout.home_recyclerview_head);
-        mLRecyclerViewAdapter.addHeaderView(headerView);
-
-
+//        //初始化促销单品的适配器
+        headAdapter = new HeadAdapter(getContext(), headList, new int[]{R.layout.item_promotpe_goods});
+        //初始化Recycler
+        headRecycler = (RecyclerView) header.findViewById(R.id.recycler_head);
+        headRecycler.setLayoutManager(new GridLayoutManager(getContext(), 1, LinearLayoutManager.HORIZONTAL, false));
+        headRecycler.setAdapter(headAdapter);
     }
 
     @Override
     public void initToolbar(View view) {
+
         standard_toolbar = (Toolbar) view.findViewById(R.id.standard_toolbar);
         standard_toolbar_title = (TextView) view.findViewById(R.id.standard_toolbar_title);
         standard_toolbar_title.setText("首页");
@@ -120,10 +149,24 @@ public class HomeFragment extends BaseFragment {
             @Override
             protected void MyOnResponse(Call call, Response response) throws IOException {
                 Gson gson = new Gson();
-                HomeBannerRsp homeBean = gson.fromJson(response.body().string(), HomeBannerRsp.class);
-//                bannerAdapter.addData(homeBean.getData().getBanners());
-//                bannerLayout.setBannerAdapter(bannerAdapter);
-                Toast.makeText(getContext(), "成功了", Toast.LENGTH_SHORT).show();
+                //获取轮播图和促销单品的数据
+                HomeBanner homeBanner = gson.fromJson(response.body().string(), HomeBanner.class);
+                //设置轮播图数据
+                for (int i = 0; i < homeBanner.getData().getPlayer().size(); i++) {
+                    bannerList.add(homeBanner.getData().getPlayer().get(i).getPhoto().getThumb());
+                }
+                banner.setImages(bannerList);
+                banner.start();
+
+                //设置促销单品的数据
+                headAdapter.upData(homeBanner.getData().getPromote_goods());
+
+
+                //获取首页商品的数据
+//                CategoryHome categoryHome = gson.fromJson(response.body().string(),CategoryHome.class);
+//                lRecyclerAdapter.upData(categoryHome.getHotGoodsList());
+                Toast.makeText(getContext(), "成功了" + homeBanner.getData().getPromote_goods(), Toast.LENGTH_SHORT).show();
+
 
             }
         });

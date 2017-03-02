@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import com.example.administrator.eshop.R;
 import com.example.administrator.eshop.activity.base.BaseViewHolder;
+import com.example.administrator.eshop.activity.base.CommonAdapter;
 import com.example.administrator.eshop.activity.base.ListBaseAdapter;
 import com.example.administrator.eshop.activity.mode.Category;
 
@@ -18,17 +19,8 @@ import java.util.List;
 public class ChildrenAdapter extends ListBaseAdapter<Category.DataBean.ChildrenBean> {
     private List<Category.DataBean.ChildrenBean> list;
 
-    public ChildrenAdapter(Context context, List list) {
-        super(context, list);
-        this.list = list;
-    }
-
-    @Override
-    protected BaseViewHolder getViewHolder(View itemView, int position) {
-        ChiHolder holder = new ChiHolder(itemView);
-        holder.initWidget(list.get(position));
-
-        return null;
+    public ChildrenAdapter(Context context, List<Category.DataBean.ChildrenBean> list, int[] itemLayoutId) {
+        super(context, list, itemLayoutId);
     }
 
     @Override
@@ -36,21 +28,17 @@ public class ChildrenAdapter extends ListBaseAdapter<Category.DataBean.ChildrenB
         return R.layout.item_children_category;
     }
 
-    public static class ChiHolder extends BaseViewHolder<Category.DataBean.ChildrenBean> {
-        View itemView;
-        TextView textView;
-
-        public ChiHolder(View itemView) {
-            super(itemView);
-            this.itemView = itemView;
-            textView = (TextView) itemView.findViewById(R.id.text_category);
-        }
-
-
-        @Override
-        public void initWidget(Category.DataBean.ChildrenBean data) {
-            textView.setText(data.getName());
-
-        }
+    @Override
+    protected void setHolder(BaseViewHolder holder, Category.DataBean.ChildrenBean data) {
+        holder.setTextView(R.id.text_category,data.getName());
     }
+
+//    public ChildrenAdapter(Context context, List<Category.DataBean.ChildrenBean> list, int[] itemLayoutId) {
+//        super(context, list, itemLayoutId);
+//    }
+//
+//    @Override
+//    public void setData(BaseViewHolder holder, Category.DataBean.ChildrenBean data, int viewType) {
+//        holder.setTextView(R.id.text_category,data.getName());
+//    }
 }

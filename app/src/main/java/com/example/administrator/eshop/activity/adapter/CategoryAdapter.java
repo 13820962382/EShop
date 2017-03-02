@@ -7,6 +7,7 @@ import android.widget.TextView;
 
 import com.example.administrator.eshop.R;
 import com.example.administrator.eshop.activity.base.BaseViewHolder;
+import com.example.administrator.eshop.activity.base.CommonAdapter;
 import com.example.administrator.eshop.activity.base.ListBaseAdapter;
 import com.example.administrator.eshop.activity.mode.Category;
 
@@ -16,21 +17,10 @@ import java.util.List;
  * Created by Administrator on 2017/2/24.
  */
 
-public class CategoryAdapter extends ListBaseAdapter<Category.DataBean>{
-    private List<Category.DataBean> list;
+public class CategoryAdapter extends ListBaseAdapter<Category.DataBean> {
 
-
-    public CategoryAdapter(Context context, List list) {
-        super(context, list);
-        this.list=list;
-    }
-
-    @Override
-    protected BaseViewHolder getViewHolder(View itemView, int position) {
-        CaViewHolder holder = new CaViewHolder(itemView);
-        holder.initWidget(list.get(position));
-
-        return null;
+    public CategoryAdapter(Context context, List<Category.DataBean> list, int[] itemLayoutId) {
+        super(context, list, itemLayoutId);
     }
 
     @Override
@@ -38,24 +28,28 @@ public class CategoryAdapter extends ListBaseAdapter<Category.DataBean>{
         return R.layout.item_primary_category;
     }
 
-
-    public class CaViewHolder extends BaseViewHolder<Category.DataBean>{
-        View itemView;
-        TextView textView;
-
-        public CaViewHolder(View itemView) {
-            super(itemView);
-            this.itemView = itemView;
-            textView = (TextView) itemView.findViewById(R.id.text_category);
-
-        }
-
-        @Override
-        public void initWidget(Category.DataBean data) {
-            textView.setText(data.getName());
-
-        }
-
-
+    @Override
+    protected void setHolder(BaseViewHolder holder, Category.DataBean data) {
+        holder.setTextView(R.id.text_category,data.getName());
     }
+
+//    public CategoryAdapter(Context context, List<Category.DataBean> list, int[] itemLayoutId) {
+//        super(context, list, itemLayoutId);
+//    }
+//
+//
+//    @Override
+//    public void setData(BaseViewHolder holder, Category.DataBean data, int viewType) {
+//        holder.setTextView(R.id.text_category,data.getName());
+//    }
+
+
+//    public class CaViewHolder extends BaseViewHolder{
+//        View itemView;
+//        TextView textView;
+//
+//        public CaViewHolder(View itemView, Context context) {
+//            super(itemView, context);
+//        }
+//    }
 }

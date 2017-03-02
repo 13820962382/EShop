@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * 轮播图实体.
  */
-public class Banner {
+public class Banner{
 
     @SerializedName("photo") private Picture mPicture; // 轮播图图片
 

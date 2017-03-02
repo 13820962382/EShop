@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * 图片实体.
  */
-public class Picture {
+public class Picture extends SimpleGoods{
 
     @SerializedName("small") private String mSmall; // 小图
 

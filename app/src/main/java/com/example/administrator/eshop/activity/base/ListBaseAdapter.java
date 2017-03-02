@@ -15,10 +15,12 @@ import java.util.List;
 public abstract class ListBaseAdapter<T> extends BaseAdapter {
     private List<T> list;
     private Context context;
+    int[] itemLayoutId;
 
-    public ListBaseAdapter( Context context,List<T> list) {
+    public ListBaseAdapter(Context context, List<T> list, int[] itemLayoutId) {
         this.list = list;
         this.context = context;
+        this.itemLayoutId = itemLayoutId;
     }
 
     @Override
@@ -41,6 +43,12 @@ public abstract class ListBaseAdapter<T> extends BaseAdapter {
         notifyDataSetChanged();
     }
 
+    public void upData(List<T> data) {
+        list.clear();
+        list.addAll(data);
+        notifyDataSetChanged();
+    }
+
     ;
 
     public void updateData(List<T> data) {
@@ -57,7 +65,8 @@ public abstract class ListBaseAdapter<T> extends BaseAdapter {
         BaseViewHolder holder;
         if (view == null) {
             view = LayoutInflater.from(context).inflate(getLayoutId(), viewGroup, false);
-            holder = getViewHolder(view,i);
+            holder = new BaseViewHolder(view, context);
+            setHolder(holder, list.get(i));
             view.setTag(holder);
         }
 
@@ -65,9 +74,9 @@ public abstract class ListBaseAdapter<T> extends BaseAdapter {
         return view;
     }
 
-    protected abstract BaseViewHolder getViewHolder(View itemView,int position);
-
     protected abstract int getLayoutId();
+
+    protected abstract void setHolder(BaseViewHolder holder, T data);
 
 
 }

@@ -1,6 +1,8 @@
 package com.example.administrator.eshop.activity.fragment;
 
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,6 +19,7 @@ import com.example.administrator.eshop.activity.adapter.ChildrenAdapter;
 import com.example.administrator.eshop.activity.api.MyCallBack;
 import com.example.administrator.eshop.activity.api.OkHttpUtil;
 import com.example.administrator.eshop.activity.base.BaseFragment;
+import com.example.administrator.eshop.activity.base.CommonAdapter;
 import com.example.administrator.eshop.activity.mode.Category;
 import com.google.gson.Gson;
 
@@ -31,8 +34,9 @@ import okhttp3.Response;
  * Created by Administrator on 2017/2/23.
  */
 
-public class CategoryFragment extends BaseFragment {
+public class CategoryFragment extends BaseFragment{
     private Toolbar standard_toolbar;
+//    private RecyclerView list_category, list_children;
     private ListView list_category, list_children;
     private TextView standard_toolbar_title;
     private CategoryAdapter caAdapter;
@@ -44,16 +48,23 @@ public class CategoryFragment extends BaseFragment {
 
     @Override
     public void initView(View view) {
+//        list_category = (RecyclerView) view.findViewById(R.id.list_category);
+//        list_category.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
+//        list_children = (RecyclerView) view.findViewById(R.id.list_children);
+//        list_children.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
         list_category = (ListView) view.findViewById(R.id.list_category);
         list_children = (ListView) view.findViewById(R.id.list_children);
-
         categoryList = new ArrayList<>();
         chiList = new ArrayList<>();
-        caAdapter = new CategoryAdapter(getContext(), categoryList);
-        chiAdapter = new ChildrenAdapter(getContext(),chiList);
+        caAdapter = new CategoryAdapter(getContext(), categoryList,new int[]{R.layout.item_primary_category} );
+        chiAdapter = new ChildrenAdapter(getContext(),chiList,new int[]{R.layout.item_children_category});
         list_category.setAdapter(caAdapter);
         list_children.setAdapter(chiAdapter);
         list_category.setItemChecked(0,true);
+    }
+    @Override
+    public int getLayoutId() {
+        return R.layout.fragment_category;
     }
 
     @Override
@@ -74,17 +85,33 @@ public class CategoryFragment extends BaseFragment {
     }
 
     private void ChooseCategory() {
+//        caAdapter.setOnItemClickListener(new CommonAdapter.OnItemClickListener() {
+//            @Override
+//            public void OnItemClick(View view, int position) {
+////                Toast.makeText(getContext(), "点击效果", Toast.LENGTH_SHORT).show();
+//                chiAdapter.upData(caAdapter.getItem(position).getChildren());
+//                list_children.setAdapter(chiAdapter);
+//            }
+//        });
+//
+//        //// TODO: 2017/2/28 子分类跳转页面待实现
+//        chiAdapter.setOnItemClickListener(new CommonAdapter.OnItemClickListener() {
+//            @Override
+//            public void OnItemClick(View view, int position) {
+//                Toast.makeText(getContext(), "子分类", Toast.LENGTH_SHORT).show();
+//            }
+//        });
         list_category.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                chiAdapter.updateData(caAdapter.getItem(i).getChildren());
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                chiAdapter.upData(caAdapter.getItem(position).getChildren());
                 list_children.setAdapter(chiAdapter);
             }
         });
-        //// TODO: 2017/2/28 子分类跳转页面待实现 
+
         list_children.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 Toast.makeText(getContext(), "子分类", Toast.LENGTH_SHORT).show();
             }
         });
@@ -114,11 +141,6 @@ public class CategoryFragment extends BaseFragment {
 
     }
 
-
-    @Override
-    public int getLayoutId() {
-        return R.layout.fragment_category;
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
