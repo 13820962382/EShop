@@ -3,10 +3,7 @@
     android:layout_width="80dp"
     android:layout_height="80dp"
     android:layout_marginLeft="10dp"
-    android:padding="5dp"
-    android:layout_gravity="center"
-    android:gravity="center"
-    android:orientation="vertical">
+    android:padding="5dp">
 
     <ImageView
         android:id="@+id/promotpe_goods"

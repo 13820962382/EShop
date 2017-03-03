@@ -1,6 +1,5 @@
 package com.example.administrator.eshop.activity.fragment;
 
-import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
@@ -9,31 +8,21 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.administrator.eshop.R;
-import com.example.administrator.eshop.activity.adapter.BannerAdapter;
 import com.example.administrator.eshop.activity.adapter.HeadAdapter;
 import com.example.administrator.eshop.activity.adapter.LRecyclerAdapter;
 import com.example.administrator.eshop.activity.api.MyCallBack;
 import com.example.administrator.eshop.activity.api.OkHttpUtil;
 import com.example.administrator.eshop.activity.base.BaseFragment;
-import com.example.administrator.eshop.activity.mode.Banner;
-import com.example.administrator.eshop.activity.mode.CategoryHome;
-import com.example.administrator.eshop.activity.mode.HomeBanner;
-import com.example.administrator.eshop.activity.mode.HomeBannerRsp;
+import com.example.administrator.eshop.activity.mode.mymode.HomeBanner;
 import com.example.administrator.eshop.activity.mode.SimpleGoods;
-import com.example.administrator.eshop.activity.view.BannerLayout;
+import com.example.administrator.eshop.activity.mode.mymode.HomeCategory;
 import com.example.administrator.eshop.activity.view.GlideImageLoader;
 import com.github.jdsjlzx.recyclerview.LRecyclerView;
 import com.github.jdsjlzx.recyclerview.LRecyclerViewAdapter;
-import com.github.jdsjlzx.view.CommonHeader;
 import com.google.gson.Gson;
-import com.squareup.picasso.Picasso;
 import com.youth.banner.BannerConfig;
 import com.youth.banner.Transformer;
 
@@ -53,7 +42,8 @@ public class HomeFragment extends BaseFragment {
     private TextView standard_toolbar_title;
     private com.youth.banner.Banner banner;
     private static final String HOME_URL = "http://106.14.32.204/eshop/emobile/?url=/home/data";
-    private List<SimpleGoods> homeList = new ArrayList();
+    private static final String HOME_CATEGORY_URL = "http://106.14.32.204/eshop/emobile/?url=/home/category";
+    private List<HomeCategory.DataBean> homeList = new ArrayList();
     private List<HomeBanner.DataBean.PromoteGoodsBean> headList = new ArrayList();
     private List bannerList = new ArrayList();
     private HeadAdapter headAdapter;
@@ -62,6 +52,8 @@ public class HomeFragment extends BaseFragment {
     private LRecyclerView lRecyclerView;
     private LRecyclerViewAdapter adapter;
     private View header;
+    private OkHttpUtil instance;
+    private Call call;
     //    private BannerAdapter<Banner> bannerAdapter;
 //    private ListView list_home_goods;
 //    private ViewPager viewPager;
@@ -87,23 +79,22 @@ public class HomeFragment extends BaseFragment {
 //            }
 //        };
 //        bannerLayout.setBannerAdapter(bannerAdapter);
-
-
-        lRecyclerView = (LRecyclerView) view.findViewById(R.id.lrecyclerview_banner);
-        lRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL,false));
-        lRecyclerAdapter = new LRecyclerAdapter(getContext(), homeList, new int[]{R.layout.home_recyclerview_item});
-        adapter = new LRecyclerViewAdapter(lRecyclerAdapter);
         //初始化头布局
-        header = LayoutInflater.from(getContext()).inflate(R.layout.home_recyclerview_head,(ViewGroup) view, false);
-        //添加头布局
+        header = LayoutInflater.from(getContext()).inflate(R.layout.home_recyclerview_head, (ViewGroup) view, false);
+        lRecyclerView = (LRecyclerView) view.findViewById(R.id.lrecyclerview_banner);
+        lRecyclerView.setLayoutManager(new LinearLayoutManager(getContext(), LinearLayoutManager.VERTICAL, false));
+        lRecyclerAdapter = new LRecyclerAdapter(getContext(), homeList, new int[]{R.layout.home_recyclerview_item1,R.layout.home_recyclerview_item2,R.layout.home_recyclerview_item3});
+        adapter = new LRecyclerViewAdapter(lRecyclerAdapter);
+
         initBanner(view);
+        //添加头布局
         adapter.addHeaderView(header);
         lRecyclerView.setAdapter(adapter);
 
     }
 
     private void initBanner(View view) {
-        banner = (com.youth.banner.Banner) view.findViewById(R.id.banner);
+        banner = (com.youth.banner.Banner) header.findViewById(R.id.banner);
 
         //设置banner样式
         banner.setBannerStyle(BannerConfig.CIRCLE_INDICATOR);
@@ -143,13 +134,13 @@ public class HomeFragment extends BaseFragment {
 
     @Override
     public void initData() {
-
-        Call call = OkHttpUtil.getInstance().getCall(HOME_URL);
+        //获取轮播图和促销单品的数据
+        instance = OkHttpUtil.getInstance();
+        Call call = instance.getCall(HOME_URL);
         call.enqueue(new MyCallBack(getContext()) {
             @Override
             protected void MyOnResponse(Call call, Response response) throws IOException {
                 Gson gson = new Gson();
-                //获取轮播图和促销单品的数据
                 HomeBanner homeBanner = gson.fromJson(response.body().string(), HomeBanner.class);
                 //设置轮播图数据
                 for (int i = 0; i < homeBanner.getData().getPlayer().size(); i++) {
@@ -157,17 +148,18 @@ public class HomeFragment extends BaseFragment {
                 }
                 banner.setImages(bannerList);
                 banner.start();
-
                 //设置促销单品的数据
                 headAdapter.upData(homeBanner.getData().getPromote_goods());
-
-
-                //获取首页商品的数据
-//                CategoryHome categoryHome = gson.fromJson(response.body().string(),CategoryHome.class);
-//                lRecyclerAdapter.upData(categoryHome.getHotGoodsList());
-                Toast.makeText(getContext(), "成功了" + homeBanner.getData().getPromote_goods(), Toast.LENGTH_SHORT).show();
-
-
+            }
+        });
+        //获取首页商品列表
+        Call homeCall = instance.getCall(HOME_CATEGORY_URL);
+        homeCall.enqueue(new MyCallBack(getContext()) {
+            @Override
+            protected void MyOnResponse(Call call, Response response) throws IOException {
+                Gson gson = new Gson();
+                HomeCategory homeCategory = gson.fromJson(response.body().string(), HomeCategory.class);
+                lRecyclerAdapter.upData(homeCategory.getData());
             }
         });
 

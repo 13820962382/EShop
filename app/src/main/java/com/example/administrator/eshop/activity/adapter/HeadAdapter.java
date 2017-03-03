@@ -1,13 +1,11 @@
 package com.example.administrator.eshop.activity.adapter;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 
 import com.example.administrator.eshop.R;
 import com.example.administrator.eshop.activity.base.BaseViewHolder;
 import com.example.administrator.eshop.activity.base.CommonAdapter;
-import com.example.administrator.eshop.activity.mode.HomeBanner;
-import com.example.administrator.eshop.activity.mode.SimpleGoods;
+import com.example.administrator.eshop.activity.mode.mymode.HomeBanner;
 
 import java.util.List;
 

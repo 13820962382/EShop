@@ -1,4 +1,4 @@
-package com.example.administrator.eshop.activity.mode;
+package com.example.administrator.eshop.activity.mode.mymode;
 
 import java.util.List;
 

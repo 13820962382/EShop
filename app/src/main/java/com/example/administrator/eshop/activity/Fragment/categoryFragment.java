@@ -1,8 +1,6 @@
 package com.example.administrator.eshop.activity.fragment;
 
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -19,8 +17,7 @@ import com.example.administrator.eshop.activity.adapter.ChildrenAdapter;
 import com.example.administrator.eshop.activity.api.MyCallBack;
 import com.example.administrator.eshop.activity.api.OkHttpUtil;
 import com.example.administrator.eshop.activity.base.BaseFragment;
-import com.example.administrator.eshop.activity.base.CommonAdapter;
-import com.example.administrator.eshop.activity.mode.Category;
+import com.example.administrator.eshop.activity.mode.mymode.Category;
 import com.google.gson.Gson;
 
 import java.io.IOException;
@@ -94,7 +91,7 @@ public class CategoryFragment extends BaseFragment{
 //            }
 //        });
 //
-//        //// TODO: 2017/2/28 子分类跳转页面待实现
+//
 //        chiAdapter.setOnItemClickListener(new CommonAdapter.OnItemClickListener() {
 //            @Override
 //            public void OnItemClick(View view, int position) {
@@ -108,7 +105,7 @@ public class CategoryFragment extends BaseFragment{
                 list_children.setAdapter(chiAdapter);
             }
         });
-
+        //TODO: 2017/2/28 子分类跳转页面待实现
         list_children.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {

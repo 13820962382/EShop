@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 /**
  * 简单商品对象.
  */
-public class SimpleGoods {
+public class SimpleGoods extends CategoryHome{
 
     @SerializedName("goods_id") private int mGoodsId;
 

@@ -1,15 +1,11 @@
 package com.example.administrator.eshop.activity.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.view.View;
-import android.widget.TextView;
 
 import com.example.administrator.eshop.R;
 import com.example.administrator.eshop.activity.base.BaseViewHolder;
-import com.example.administrator.eshop.activity.base.CommonAdapter;
 import com.example.administrator.eshop.activity.base.ListBaseAdapter;
-import com.example.administrator.eshop.activity.mode.Category;
+import com.example.administrator.eshop.activity.mode.mymode.Category;
 
 import java.util.List;
 
