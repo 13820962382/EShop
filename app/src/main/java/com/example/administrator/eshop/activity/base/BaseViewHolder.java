@@ -52,7 +52,7 @@ public class BaseViewHolder extends RecyclerView.ViewHolder {
 //        return (T) layoutView;
 //    }
 
-    public void setTextView(@IdRes int viewId, String text) {
+    public void setTextView(@IdRes int viewId, CharSequence text) {
         textView = getViewId(viewId);
         textView.setText(text);
 

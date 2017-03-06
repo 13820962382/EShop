@@ -34,6 +34,8 @@
         </activity>
 
         <activity android:name=".activity.MainActivity"/>
+        <activity android:name=".activity.SearchActivity"
+            android:windowSoftInputMode="adjustUnspecified|stateAlwaysHidden"/>
 
         <receiver android:name="com.baidu.android.pushservice.PushServiceReceiver"
             android:process=":bdservice_v1" >

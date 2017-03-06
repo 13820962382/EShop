@@ -1,5 +1,7 @@
 package com.example.administrator.eshop.activity.api;
 
+import com.example.administrator.eshop.activity.mode.Filter;
+import com.example.administrator.eshop.activity.mode.SearchReq;
 import com.google.gson.Gson;
 
 import okhttp3.Call;
@@ -12,7 +14,7 @@ import okhttp3.RequestBody;
  * Created by Administrator on 2017/2/24.
  */
 
-public class OkHttpUtil<T> {
+public class OkHttpUtil {
     private OkHttpClient httpClient;
 
     public static synchronized OkHttpUtil getInstance() {
@@ -34,7 +36,7 @@ public class OkHttpUtil<T> {
         return call;
     }
 
-    public Call postCall(String url, T param) {
+    public Call postCall(String url, SearchReq param) {
         Gson gson = new Gson();
         String jsonString = gson.toJson(param);
         RequestBody body = new FormBody.Builder()

@@ -5,10 +5,12 @@ import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.administrator.eshop.R;
 import com.example.administrator.eshop.activity.adapter.HeadAdapter;
@@ -20,6 +22,7 @@ import com.example.administrator.eshop.activity.mode.mymode.HomeBanner;
 import com.example.administrator.eshop.activity.mode.SimpleGoods;
 import com.example.administrator.eshop.activity.mode.mymode.HomeCategory;
 import com.example.administrator.eshop.activity.view.GlideImageLoader;
+import com.github.jdsjlzx.interfaces.OnRefreshListener;
 import com.github.jdsjlzx.recyclerview.LRecyclerView;
 import com.github.jdsjlzx.recyclerview.LRecyclerViewAdapter;
 import com.google.gson.Gson;
@@ -54,11 +57,6 @@ public class HomeFragment extends BaseFragment {
     private View header;
     private OkHttpUtil instance;
     private Call call;
-    //    private BannerAdapter<Banner> bannerAdapter;
-//    private ListView list_home_goods;
-//    private ViewPager viewPager;
-//    private LinearLayout linearPoint;
-//    private BannerLayout bannerLayout;
 
     @Override
     public int getLayoutId() {
@@ -131,10 +129,29 @@ public class HomeFragment extends BaseFragment {
         activity.getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
     }
 
+    public void onRefresh(){
+            lRecyclerView.setOnRefreshListener(new OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    getNetData();
+                    lRecyclerView.refreshComplete(0);
+                    adapter.notifyDataSetChanged();
+                }
+            });
+        lRecyclerView.setFooterViewHint("加载更多","正在加载","网络不给力");
+    }
+
 
     @Override
     public void initData() {
         //获取轮播图和促销单品的数据
+        getNetData();
+        onRefresh();
+
+
+    }
+
+    private void getNetData() {
         instance = OkHttpUtil.getInstance();
         Call call = instance.getCall(HOME_URL);
         call.enqueue(new MyCallBack(getContext()) {
@@ -162,8 +179,6 @@ public class HomeFragment extends BaseFragment {
                 lRecyclerAdapter.upData(homeCategory.getData());
             }
         });
-
-
     }
 
 

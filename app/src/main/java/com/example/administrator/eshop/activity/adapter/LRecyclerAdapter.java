@@ -34,12 +34,6 @@ public class LRecyclerAdapter extends CommonAdapter<HomeCategory.DataBean>implem
         this.itemLayoutId=itemLayoutId;
     }
 
-
-//    @Override
-//    public void setOnItemClickListener(OnItemClickListener listener) {
-//
-//    }
-
     @Override
     public void setData(BaseViewHolder holder, HomeCategory.DataBean data, int viewType) {
         holder.setTextView(R.id.tv_home_item_title, data.getName());
@@ -48,12 +42,10 @@ public class LRecyclerAdapter extends CommonAdapter<HomeCategory.DataBean>implem
     }
 
     private void setViewOnClick(BaseViewHolder holder, int viewType) {
-        holder.setViewOnClick(R.id.img_home_item03,itemLayoutId,viewType,new BaseViewHolder.OnItemClickListener() {
-            @Override
-            public void OnItemClick(View view) {
-                Toast.makeText(context, "王哈哈", Toast.LENGTH_SHORT).show();
-            }
-        });
+        holder.setViewOnClick(R.id.img_home_item01,itemLayoutId,viewType,this);
+        holder.setViewOnClick(R.id.img_home_item02,itemLayoutId,viewType,this);
+        holder.setViewOnClick(R.id.img_home_item03,itemLayoutId,viewType,this);
+        holder.setViewOnClick(R.id.img_home_item04,itemLayoutId,viewType,this);
         holder.setViewOnClick(R.id.img_home_item05,itemLayoutId,viewType,this);
     }
 
@@ -79,17 +71,27 @@ public class LRecyclerAdapter extends CommonAdapter<HomeCategory.DataBean>implem
                 holder.setImageView(R.id.img_home_item04, data.getGoods().get(3).getImg().getUrl());
                 break;
         }
-
-//        List urlList = new ArrayList();
-//        for (int i = 0; i < data.getGoods().size(); i++) {
-//            urlList.add(data.getGoods().get(i).getImg().getUrl());
-//        }
-//        int[] viewIds = new int[]{R.id.img_home_item01,R.id.img_home_item02,R.id.img_home_item03,R.id.img_home_item04,R.id.img_home_item05};
-//        holder.setImageView(viewIds,itemLayoutId,viewType,urlList);
     }
-
+    // TODO: 2017/3/5 商品详情待实现
     @Override
     public void OnItemClick(View view) {
-        Toast.makeText(context, "这是第五张图片", Toast.LENGTH_SHORT).show();
+        switch (view.getId()){
+            case R.id.img_home_item01:
+                Toast.makeText(context, "商品1详情待实现", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.img_home_item02:
+                Toast.makeText(context, "商品2详情待实现", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.img_home_item03:
+                Toast.makeText(context, "商品3详情待实现", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.img_home_item04:
+                Toast.makeText(context, "商品4详情待实现", Toast.LENGTH_SHORT).show();
+                break;
+            case R.id.img_home_item05:
+                Toast.makeText(context, "商品5详情待实现", Toast.LENGTH_SHORT).show();
+                break;
+        }
+
     }
 }

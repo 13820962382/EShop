@@ -15,7 +15,7 @@
             android:background="@color/colorPrimary"
             app:theme="@style/Widget.AppCompat.Toolbar">
 
-            <com.feicuiedu.eshop.base.widgets.SimpleSearchView
+            <com.example.administrator.eshop.activity.view.CustomSearchView
                 android:id="@+id/search_view"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/size_36"
@@ -48,8 +48,12 @@
             android:text="@string/search_order_price"/>
 
     </LinearLayout>
+    <com.github.jdsjlzx.recyclerview.LRecyclerView
+        android:id="@+id/lrecyclerview_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
-    <in.srain.cube.views.ptr.PtrFrameLayout
+  <!--  <in.srain.cube.views.ptr.PtrFrameLayout
         android:id="@id/standard_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -62,5 +66,5 @@
             android:dividerHeight="1dp"
             android:scrollbars="none"/>
 
-    </in.srain.cube.views.ptr.PtrFrameLayout>
+    </in.srain.cube.views.ptr.PtrFrameLayout>-->
 </LinearLayout>

@@ -1,5 +1,6 @@
 package com.example.administrator.eshop.activity.fragment;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -12,11 +13,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.administrator.eshop.R;
+import com.example.administrator.eshop.activity.MainActivity;
+import com.example.administrator.eshop.activity.SearchActivity;
 import com.example.administrator.eshop.activity.adapter.CategoryAdapter;
 import com.example.administrator.eshop.activity.adapter.ChildrenAdapter;
 import com.example.administrator.eshop.activity.api.MyCallBack;
 import com.example.administrator.eshop.activity.api.OkHttpUtil;
 import com.example.administrator.eshop.activity.base.BaseFragment;
+import com.example.administrator.eshop.activity.mode.Filter;
 import com.example.administrator.eshop.activity.mode.mymode.Category;
 import com.google.gson.Gson;
 
@@ -31,9 +35,9 @@ import okhttp3.Response;
  * Created by Administrator on 2017/2/23.
  */
 
-public class CategoryFragment extends BaseFragment{
+public class CategoryFragment extends BaseFragment {
     private Toolbar standard_toolbar;
-//    private RecyclerView list_category, list_children;
+    //    private RecyclerView list_category, list_children;
     private ListView list_category, list_children;
     private TextView standard_toolbar_title;
     private CategoryAdapter caAdapter;
@@ -42,6 +46,9 @@ public class CategoryFragment extends BaseFragment{
     private List<Category.DataBean.ChildrenBean> chiList;
     public static final String URL = "http://106.14.32.204/eshop/emobile/?url=category";
     private Category category;
+    private int goodsId;
+    private int childrenGoodsId;
+    private String string;
 
     @Override
     public void initView(View view) {
@@ -53,12 +60,13 @@ public class CategoryFragment extends BaseFragment{
         list_children = (ListView) view.findViewById(R.id.list_children);
         categoryList = new ArrayList<>();
         chiList = new ArrayList<>();
-        caAdapter = new CategoryAdapter(getContext(), categoryList,new int[]{R.layout.item_primary_category} );
-        chiAdapter = new ChildrenAdapter(getContext(),chiList,new int[]{R.layout.item_children_category});
+        caAdapter = new CategoryAdapter(getContext(), categoryList, new int[]{R.layout.item_primary_category});
+        chiAdapter = new ChildrenAdapter(getContext(), chiList, new int[]{R.layout.item_children_category});
         list_category.setAdapter(caAdapter);
         list_children.setAdapter(chiAdapter);
-        list_category.setItemChecked(0,true);
+        list_category.setItemChecked(0, true);
     }
+
     @Override
     public int getLayoutId() {
         return R.layout.fragment_category;
@@ -82,22 +90,7 @@ public class CategoryFragment extends BaseFragment{
     }
 
     private void ChooseCategory() {
-//        caAdapter.setOnItemClickListener(new CommonAdapter.OnItemClickListener() {
-//            @Override
-//            public void OnItemClick(View view, int position) {
-////                Toast.makeText(getContext(), "点击效果", Toast.LENGTH_SHORT).show();
-//                chiAdapter.upData(caAdapter.getItem(position).getChildren());
-//                list_children.setAdapter(chiAdapter);
-//            }
-//        });
-//
-//
-//        chiAdapter.setOnItemClickListener(new CommonAdapter.OnItemClickListener() {
-//            @Override
-//            public void OnItemClick(View view, int position) {
-//                Toast.makeText(getContext(), "子分类", Toast.LENGTH_SHORT).show();
-//            }
-//        });
+        //一级分类点击事件
         list_category.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -105,11 +98,12 @@ public class CategoryFragment extends BaseFragment{
                 list_children.setAdapter(chiAdapter);
             }
         });
-        //TODO: 2017/2/28 子分类跳转页面待实现
+        //二级分类点击事件
         list_children.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Toast.makeText(getContext(), "子分类", Toast.LENGTH_SHORT).show();
+                childrenGoodsId = caAdapter.getItem(position).getId();
+                JumpSearch(childrenGoodsId);
             }
         });
 
@@ -125,14 +119,13 @@ public class CategoryFragment extends BaseFragment{
                 Gson gson = new Gson();
                 category = null;
                 try {
-                    category = gson.fromJson(response.body().string(),Category.class);
+                    category = gson.fromJson(response.body().string(), Category.class);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
                 caAdapter.addData(category.getData());
                 chiAdapter.addData(category.getData().get(0).getChildren());
                 ChooseCategory();
-                Toast.makeText(getContext(), "访问成功", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -142,19 +135,31 @@ public class CategoryFragment extends BaseFragment{
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.fragment_category,menu);
+        inflater.inflate(R.menu.fragment_category, menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.menu_search:
-                Toast.makeText(getContext(), "搜索", Toast.LENGTH_SHORT).show();
+                int position = list_category.getCheckedItemPosition();
+                goodsId = caAdapter.getItem(position).getId();
+                JumpSearch(goodsId);
 
                 break;
 
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void JumpSearch(int goodsId) {
+        Filter filter = new Filter();
+        filter.setCategoryId(goodsId);
+        string = new Gson().toJson(filter);
+        Intent intent = new Intent(getActivity(), SearchActivity.class);
+        intent.putExtra("key", string);
+        getActivity().startActivity(intent);
+        getActivity().overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
     }
 }

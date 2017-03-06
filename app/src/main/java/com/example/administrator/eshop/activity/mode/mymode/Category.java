@@ -55,15 +55,15 @@ public class Category {
          * children : [{"id":"57","name":"长袖连衣裙"},{"id":"58","name":"百褶裙"},{"id":"59","name":"荷叶边上衣"}]
          */
 
-        private String id;
+        private int id;
         private String name;
         private List<ChildrenBean> children;
 
-        public String getId() {
+        public int getId() {
             return id;
         }
 
-        public void setId(String id) {
+        public void setId(int id) {
             this.id = id;
         }
 
@@ -89,14 +89,14 @@ public class Category {
              * name : 长袖连衣裙
              */
 
-            private String id;
+            private int id;
             private String name;
 
-            public String getId() {
+            public int getId() {
                 return id;
             }
 
-            public void setId(String id) {
+            public void setId(int id) {
                 this.id = id;
             }
 
