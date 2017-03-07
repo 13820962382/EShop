@@ -102,7 +102,7 @@ public class CategoryFragment extends BaseFragment {
         list_children.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                childrenGoodsId = caAdapter.getItem(position).getId();
+                childrenGoodsId = chiAdapter.getItem(position).getId();
                 JumpSearch(childrenGoodsId);
             }
         });
@@ -145,7 +145,6 @@ public class CategoryFragment extends BaseFragment {
                 int position = list_category.getCheckedItemPosition();
                 goodsId = caAdapter.getItem(position).getId();
                 JumpSearch(goodsId);
-
                 break;
 
         }

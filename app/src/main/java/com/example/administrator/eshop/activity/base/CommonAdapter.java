@@ -67,6 +67,10 @@ public abstract class CommonAdapter<T> extends RecyclerView.Adapter<BaseViewHold
         return position % itemLayoutId.length;
     }
 
+    public void clear(){
+        this.list.clear();
+    }
+
     public void upData(List<T> data){
         this.list.clear();
         list.addAll(data);

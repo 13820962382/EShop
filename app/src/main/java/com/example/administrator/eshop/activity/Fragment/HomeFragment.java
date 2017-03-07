@@ -128,7 +128,7 @@ public class HomeFragment extends BaseFragment {
         //设置返回箭头
         activity.getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
     }
-
+    //下拉刷新
     public void onRefresh(){
             lRecyclerView.setOnRefreshListener(new OnRefreshListener() {
                 @Override
@@ -138,7 +138,6 @@ public class HomeFragment extends BaseFragment {
                     adapter.notifyDataSetChanged();
                 }
             });
-        lRecyclerView.setFooterViewHint("加载更多","正在加载","网络不给力");
     }
 
 
@@ -169,7 +168,7 @@ public class HomeFragment extends BaseFragment {
                 headAdapter.upData(homeBanner.getData().getPromote_goods());
             }
         });
-        //获取首页商品列表
+        //获取首页商品列表的数据
         Call homeCall = instance.getCall(HOME_CATEGORY_URL);
         homeCall.enqueue(new MyCallBack(getContext()) {
             @Override

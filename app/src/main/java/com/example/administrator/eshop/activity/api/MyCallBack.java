@@ -5,6 +5,10 @@ import android.os.Handler;
 import android.os.Looper;
 import android.widget.Toast;
 
+import com.example.administrator.eshop.activity.mode.ResponseEntity;
+import com.example.administrator.eshop.activity.mode.SearchRsp;
+import com.google.gson.Gson;
+
 import java.io.IOException;
 
 import okhttp3.Call;
@@ -19,6 +23,7 @@ public abstract class MyCallBack implements Callback {
 
     private Context context;
     private Handler handler = new Handler(Looper.getMainLooper());
+    private SearchRsp searchRsp;
 
     public MyCallBack(Context context) {
         this.context = context;
@@ -45,9 +50,11 @@ public abstract class MyCallBack implements Callback {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+
             }
         });
 
     }
     protected abstract void MyOnResponse(Call call, Response response)throws IOException;
+
 }

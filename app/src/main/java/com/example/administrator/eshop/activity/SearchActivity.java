@@ -42,6 +42,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
     private TextView text_is_hot, text_most_expensive, text_cheapest;
     private String stringExtra;
     private Filter filter;
+    private Paginated paginated;
     private Pagination pagination = new Pagination();
     private String SEARCH_URL = "http://106.14.32.204/eshop/emobile/?url=search";
     private LRecyclerView recyclerSearch;
@@ -49,6 +50,11 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
     private List searchList = new ArrayList();
     private String goodsPrice;
     private LRecyclerViewAdapter adapter;
+    private SearchRsp searchRsp;
+    private SearchReq searchReq;
+    private Call postCall;
+    private List<SimpleGoods> simpleGoodsList;
+    private List<SimpleGoods> simpleGoodsList1;
 
     @Override
     protected int getContentViewId() {
@@ -66,7 +72,7 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
         text_most_expensive = (TextView) findViewById(R.id.text_most_expensive);
         text_most_expensive.setOnClickListener(this);
         recyclerSearch = (LRecyclerView) findViewById(R.id.lrecyclerview_search);
-        recyclerSearch.setLayoutManager(new LinearLayoutManager(this,LinearLayoutManager.VERTICAL,false));
+        recyclerSearch.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         searchAdapter = new SearchAdapter(this, searchList, new int[]{R.layout.item_search_goods});
         adapter = new LRecyclerViewAdapter(searchAdapter);
         recyclerSearch.setAdapter(adapter);
@@ -74,71 +80,111 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
 
     @Override
     public void initData() {
-
+        //获取Intent传递过来的数据
         stringExtra = getIntent().getStringExtra("key");
+        //将json字符串转化对象
         filter = new Gson().fromJson(stringExtra, Filter.class);
-        int i = filter.getCategoryId();
-        Toast.makeText(this, ""+i, Toast.LENGTH_SHORT).show();
-        getSearchData();
+        //加载recyclerView
+        getSearchData(false);
+        //搜索按钮的监听事件
         searchView.setOnSearchListener(new CustomSearchView.OnSearchListener() {
             @Override
             public void search(String text) {
                 filter.setKeywords(text);
                 Toast.makeText(SearchActivity.this, text, Toast.LENGTH_SHORT).show();
-                getSearchData();
+                getSearchData(false);
             }
         });
-        onRefreshAndLoad();
-
-    }
-    public void onRefreshAndLoad(){
+        //下拉刷新监听事件
         recyclerSearch.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh() {
-                getSearchData();
+                getSearchData(false);
+                //加载0条数据，并隐藏下拉刷新视图
                 recyclerSearch.refreshComplete(0);
                 adapter.notifyDataSetChanged();
             }
         });
+        //上拉加载监听事件
         recyclerSearch.setOnLoadMoreListener(new OnLoadMoreListener() {
             @Override
             public void onLoadMore() {
-
-                recyclerSearch.setFooterViewHint("加载更多","正在加载","网络不给力");
+//                searchAdapter.clear();
+                setQuestParam(true);
+                getSearchData(true);
+                Toast.makeText(getApplicationContext(), "" + pagination.getPage(), Toast.LENGTH_SHORT).show();
+//                recyclerSearch.refreshComplete(paginated.getCount());
+//                adapter.notifyDataSetChanged();
             }
         });
 
-
     }
 
-    private void getSearchData() {
-        SearchReq searchReq = new SearchReq();
+    public void setQuestParam(boolean isRefresh) {
+        searchReq = new SearchReq();
         searchReq.setFilter(filter);
-        searchReq.setPagination(pagination);
-        Call call = OkHttpUtil.getInstance().postCall(SEARCH_URL, searchReq);
-        call.enqueue(new MyCallBack(getApplicationContext()) {
-            @Override
-            protected void MyOnResponse(Call call, Response response) throws IOException {
-                Gson gson = new Gson();
-                SearchRsp searchGoods = gson.fromJson(response.body().string(), SearchRsp.class);
-                searchAdapter.upData(searchGoods.getData());
-                recyclerSearch.setAdapter(adapter);
-
-
+        if (isRefresh){
+            if (pagination.isFirst()) {
+                //页数加一
+                pagination.next();
+                //设置页数的请求参数
+                searchReq.setPagination(pagination);
+            }else {
+                pagination.reset();
+                //设置页数的请求参数
+                searchReq.setPagination(pagination);
             }
-        });
+
+        }
+
+        }
+
+
+    //获取网络数据
+    private void getSearchData(boolean isLoadMore) {
+        if (isLoadMore == false) {
+            setQuestParam(false);
+            postCall = OkHttpUtil.getInstance().postCall(SEARCH_URL, searchReq);
+            postCall.enqueue(new MyCallBack(getApplicationContext()) {
+                @Override
+                protected void MyOnResponse(Call call, Response response) throws IOException {
+                    Gson gson = new Gson();
+                    searchRsp = gson.fromJson(response.body().string(), SearchRsp.class);
+                    simpleGoodsList1 = searchRsp.getData();
+                    searchAdapter.upData(simpleGoodsList1);
+                }
+            });
+        } else {
+            postCall = OkHttpUtil.getInstance().postCall(SEARCH_URL, searchReq);
+            postCall.enqueue(new MyCallBack(getApplicationContext()) {
+                @Override
+                protected void MyOnResponse(Call call, Response response) throws IOException {
+                    Gson gson = new Gson();
+                    searchRsp = gson.fromJson(response.body().string(), SearchRsp.class);
+                    paginated = searchRsp.getPaginated();
+                    if (paginated.getCount() < paginated.getTotal()) {
+                        simpleGoodsList = searchRsp.getData();
+                        searchAdapter.addData(simpleGoodsList);
+                    } else {
+                        recyclerSearch.setNoMore(true);
+                    }
+                }
+            });
+        }
     }
 
+    //顶部TextView选项监听事件
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.text_is_hot:
                 goodsPrice = Filter.SORT_IS_HOT;
-                text_is_hot.setActivated(true);
-                text_cheapest.setActivated(false);
+                text_is_hot.setActivated(true);//true为选中为激活状态
+                text_cheapest.setActivated(false);//false为未选中状态
                 text_most_expensive.setActivated(false);
+                //设置排序方式的请求参数
                 filter.setSortBy(goodsPrice);
-                getSearchData();
+                getSearchData(false);
                 break;
             case R.id.text_cheapest:
                 goodsPrice = Filter.SORT_PRICE_ASC;
@@ -146,15 +192,15 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                 text_cheapest.setActivated(true);
                 text_most_expensive.setActivated(false);
                 filter.setSortBy(goodsPrice);
-                getSearchData();
+                getSearchData(false);
                 break;
             case R.id.text_most_expensive:
+                goodsPrice = Filter.SORT_PRICE_DESC;
                 text_is_hot.setActivated(false);
                 text_cheapest.setActivated(false);
                 text_most_expensive.setActivated(true);
-                goodsPrice = Filter.SORT_PRICE_DESC;
                 filter.setSortBy(goodsPrice);
-                getSearchData();
+                getSearchData(false);
                 break;
         }
     }
