@@ -85,7 +85,7 @@ public class CategoryFragment extends BaseFragment {
         // 处理actionbar不展示默认的标题
         activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         //设置返回箭头
-        activity.getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+//        activity.getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
 
     }
 

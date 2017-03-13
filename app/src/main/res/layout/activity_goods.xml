@@ -44,6 +44,6 @@
             android:text="@string/goods_buy_it_now"
             android:textColor="@color/white"
             android:textSize="@dimen/font_large"/>
-
     </LinearLayout>
+
 </LinearLayout>
