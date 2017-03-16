@@ -204,4 +204,10 @@ public class SearchActivity extends BaseActivity implements View.OnClickListener
                 break;
         }
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        postCall.cancel();
+    }
 }

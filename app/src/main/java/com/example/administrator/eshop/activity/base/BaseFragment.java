@@ -38,6 +38,8 @@ public abstract class BaseFragment extends Fragment {
         return view;
     }
 
+    @LayoutRes
+    public abstract int getLayoutId();
 
     @Override
     public void onDestroy() {
@@ -53,6 +55,5 @@ public abstract class BaseFragment extends Fragment {
     public abstract void initData();
 
 
-    @LayoutRes
-    public abstract int getLayoutId();
+
 }

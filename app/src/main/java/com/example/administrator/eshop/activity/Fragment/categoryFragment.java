@@ -49,6 +49,7 @@ public class CategoryFragment extends BaseFragment {
     private int goodsId;
     private int childrenGoodsId;
     private String string;
+    private Call call;
 
     @Override
     public void initView(View view) {
@@ -112,7 +113,7 @@ public class CategoryFragment extends BaseFragment {
 
     @Override
     public void initData() {
-        Call call = OkHttpUtil.getInstance().getCall(URL);
+        call = OkHttpUtil.getInstance().getCall(URL);
         call.enqueue(new MyCallBack(getContext()) {
             @Override
             protected void MyOnResponse(Call call, Response response) throws IOException {
@@ -160,5 +161,11 @@ public class CategoryFragment extends BaseFragment {
         intent.putExtra("key", string);
         getActivity().startActivity(intent);
         getActivity().overridePendingTransition(R.anim.push_left_in, R.anim.push_left_out);
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        call.cancel();
     }
 }

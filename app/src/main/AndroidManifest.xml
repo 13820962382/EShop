@@ -36,6 +36,8 @@
         <activity android:name=".activity.MainActivity"/>
         <activity android:name=".activity.SearchActivity"
             android:windowSoftInputMode="adjustUnspecified|stateAlwaysHidden"/>
+        <activity android:name=".activity.GoodsActivity"/>
+        <activity android:name=".activity.GoodsCartActivity"/>
 
         <receiver android:name="com.baidu.android.pushservice.PushServiceReceiver"
             android:process=":bdservice_v1" >

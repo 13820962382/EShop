@@ -57,6 +57,7 @@ public class HomeFragment extends BaseFragment {
     private View header;
     private OkHttpUtil instance;
     private Call call;
+    private Call homeCall;
 
     @Override
     public int getLayoutId() {
@@ -126,7 +127,7 @@ public class HomeFragment extends BaseFragment {
         // 处理actionbar不展示默认的标题
         activity.getSupportActionBar().setDisplayShowTitleEnabled(false);
         //设置返回箭头
-        activity.getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
+        //activity.getSupportActionBar().setDefaultDisplayHomeAsUpEnabled(true);
     }
     //下拉刷新
     public void onRefresh(){
@@ -152,7 +153,7 @@ public class HomeFragment extends BaseFragment {
 
     private void getNetData() {
         instance = OkHttpUtil.getInstance();
-        Call call = instance.getCall(HOME_URL);
+        call = instance.getCall(HOME_URL);
         call.enqueue(new MyCallBack(getContext()) {
             @Override
             protected void MyOnResponse(Call call, Response response) throws IOException {
@@ -169,7 +170,7 @@ public class HomeFragment extends BaseFragment {
             }
         });
         //获取首页商品列表的数据
-        Call homeCall = instance.getCall(HOME_CATEGORY_URL);
+        homeCall = instance.getCall(HOME_CATEGORY_URL);
         homeCall.enqueue(new MyCallBack(getContext()) {
             @Override
             protected void MyOnResponse(Call call, Response response) throws IOException {
@@ -180,5 +181,11 @@ public class HomeFragment extends BaseFragment {
         });
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        call.cancel();
+        homeCall.cancel();
 
+    }
 }

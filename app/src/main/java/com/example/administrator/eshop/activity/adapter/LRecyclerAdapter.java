@@ -1,12 +1,16 @@
 package com.example.administrator.eshop.activity.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.administrator.eshop.R;
+import com.example.administrator.eshop.activity.GoodsActivity;
+import com.example.administrator.eshop.activity.MainActivity;
+import com.example.administrator.eshop.activity.SearchActivity;
 import com.example.administrator.eshop.activity.base.BaseViewHolder;
 import com.example.administrator.eshop.activity.base.CommonAdapter;
 import com.example.administrator.eshop.activity.base.ListBaseAdapter;
@@ -77,7 +81,8 @@ public class LRecyclerAdapter extends CommonAdapter<HomeCategory.DataBean>implem
     public void OnItemClick(View view) {
         switch (view.getId()){
             case R.id.img_home_item01:
-                Toast.makeText(context, "商品1详情待实现", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(context,GoodsActivity.class);
+                context.startActivity(intent);
                 break;
             case R.id.img_home_item02:
                 Toast.makeText(context, "商品2详情待实现", Toast.LENGTH_SHORT).show();
